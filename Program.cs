@@ -9,7 +9,7 @@ namespace AdventOfCode2021
     {
         public static void Main(string[] args)
         {
-            Day3P2();
+            Day4P2();
         }
 
         #region Day1
@@ -258,6 +258,166 @@ namespace AdventOfCode2021
             Console.WriteLine(oxyNumber * co2Number);
         }
 
+        #endregion
+        
+        #region Day4
+        
+        static void Day4P1()
+        {
+            var input = File.ReadAllLines("../../inputDay4.txt");
+            int[] drawNumbersInOrder;
+            drawNumbersInOrder = input[0].Split(',').Select(t => Convert.ToInt32(t)).ToArray();
+
+            // Create boards
+            List<bingoBoard> boards = new List<bingoBoard>();
+            for (int i = 2; i < input.Length; i+=6)
+            {
+                var numbers = new int[25];
+                for (int x = 0; x < 5; x++)
+                {
+                    var tempNumb = input[i + x].Split(' ').Where(n => int.TryParse(n, out _)).ToArray();
+                    for (int j = 0; j < 5; j++)
+                    {
+                        numbers[x * 5 + j] = Convert.ToInt32(tempNumb[j]);
+                    }
+                }
+                boards.Add(new bingoBoard(numbers));
+            }
+
+            foreach (var number in drawNumbersInOrder)
+            {
+                foreach (var board in boards)
+                {
+                    board.MarkNumber(number);
+                    if (board.IsBingo())
+                    {
+                        Console.WriteLine("Board with first number" + board.numbers[0].number + " is bingo!");
+                        
+                        // calculate the score
+                        int score = 0;
+                        foreach (var bNumb in board.numbers.Where(n => !n.marked))
+                        {
+                            score+= bNumb.number;
+                        }
+
+                        score *= number;
+                        Console.WriteLine("Score: " + score);
+                        return;
+                    }
+                }
+            }
+            
+        }
+
+        static void Day4P2()
+        {
+            var input = File.ReadAllLines("../../inputDay4.txt");
+            int[] drawNumbersInOrder;
+            drawNumbersInOrder = input[0].Split(',').Select(t => Convert.ToInt32(t)).ToArray();
+
+            // Create boards
+            List<bingoBoard> boards = new List<bingoBoard>();
+            for (int i = 2; i < input.Length; i+=6)
+            {
+                var numbers = new int[25];
+                for (int x = 0; x < 5; x++)
+                {
+                    var tempNumb = input[i + x].Split(' ').Where(n => int.TryParse(n, out _)).ToArray();
+                    for (int j = 0; j < 5; j++)
+                    {
+                        numbers[x * 5 + j] = Convert.ToInt32(tempNumb[j]);
+                    }
+                }
+                boards.Add(new bingoBoard(numbers));
+                boards[boards.Count-1].boardIndex = i-2 / 6;
+            }
+
+            foreach (var number in drawNumbersInOrder)
+            {
+                foreach (var board in boards)
+                {
+                    board.MarkNumber(number);
+                    
+                    if (board.IsBingo())
+                    {
+                        board.hasWon = true;
+                        if (boards.Where(b => !b.hasWon).ToArray().Length == 0)
+                        {
+                            Console.WriteLine("Board with first number " + board.numbers[0].number + " is last bingo!");
+                            
+                            // calculate the score
+                            int score = 0;
+                            foreach (var bNumb in board.numbers.Where(n => !n.marked))
+                            {
+                                score += bNumb.number;
+                            }
+
+                            Console.WriteLine(score + " * " + number);
+                            score *= number;
+                            Console.WriteLine("Score: " + score);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        
+        class bingoBoard
+        {
+            public readonly BingoNumber[] numbers = new BingoNumber[25];
+            public bool hasWon;
+            public int boardIndex;
+            
+            public bingoBoard(int[] numbers)
+            {
+                for (int i = 0; i < numbers.Length; i++)
+                {
+                    this.numbers[i] = new BingoNumber(numbers[i]);
+                }
+            }
+            
+            public void MarkNumber(int number)
+            {
+                numbers.Where(t => t.number == number).ToList().ForEach(t => t.marked = true);
+            }
+            
+            public bool IsBingo()
+            {
+                //Check horizontal
+                for (int i = 0; i < 5; i++)
+                {
+                    if (numbers[i * 5].marked && numbers[i * 5 + 1].marked && numbers[i * 5 + 2].marked && numbers[i * 5 + 3].marked && numbers[i * 5 + 4].marked)
+                    {
+                        return true;
+                    }
+                }
+                
+                //Check vertical
+                for (int i = 0; i < 5; i++)
+                {
+                    if (numbers[i].marked && numbers[i + 5].marked && numbers[i + 10].marked && numbers[i + 15].marked && numbers[i + 20].marked)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+            
+        }
+
+        class BingoNumber
+        {
+            public int number;
+            public bool marked;
+            
+            public BingoNumber(int number)
+            {
+                this.number = number;
+            }
+            
+        }
+        
         #endregion
     }
 }
