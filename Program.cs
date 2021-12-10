@@ -9,7 +9,7 @@ namespace AdventOfCode2021
     {
         public static void Main(string[] args)
         {
-            Day4P2();
+            Day5P2();
         }
 
         #region Day1
@@ -312,8 +312,7 @@ namespace AdventOfCode2021
         static void Day4P2()
         {
             var input = File.ReadAllLines("../../inputDay4.txt");
-            int[] drawNumbersInOrder;
-            drawNumbersInOrder = input[0].Split(',').Select(t => Convert.ToInt32(t)).ToArray();
+            var drawNumbersInOrder = input[0].Split(',').Select(t => Convert.ToInt32(t)).ToArray();
 
             // Create boards
             List<bingoBoard> boards = new List<bingoBoard>();
@@ -419,5 +418,173 @@ namespace AdventOfCode2021
         }
         
         #endregion
+        
+        #region Day5
+
+        static void Day5P1()
+        {
+            var input = File.ReadAllLines("../../inputDay5.txt");
+            var coords = new List<Coordinate>();
+            foreach (var line in input)
+            {
+                var tempCoords = line.Split('>').Select(t =>
+                    t.Replace(" ", "").Replace("-", "").Split(',')).ToArray();
+                
+                coords.Add(new Coordinate(Convert.ToInt32(tempCoords[0][0]), Convert.ToInt32(tempCoords[0][1])));
+                coords.Add(new Coordinate(Convert.ToInt32(tempCoords[1][0]), Convert.ToInt32(tempCoords[1][1])));
+            }
+                
+            var lineCoords = new List<Coordinate>();
+            
+            for (int i = 0; i < coords.Count; i+=2)
+            {
+                var coord1 = coords[i];
+                var coord2 = coords[i+1];
+                lineCoords.AddRange(GetLineCoordinates(coord1, coord2));
+            }
+
+            var grid = new Grid(coords.Max(m => m.x), coords.Max(m => m.y));
+            
+            foreach(var coord in lineCoords)
+            {
+                grid.grid[coord.x, coord.y] += 1;
+            }
+            
+            Console.WriteLine(grid.GetOverlaps());
+        }
+        
+        static void Day5P2()
+        {
+            var input = File.ReadAllLines("../../inputDay5.txt");
+            var coords = new List<Coordinate>();
+            foreach (var line in input)
+            {
+                var tempCoords = line.Split('>').Select(t =>
+                    t.Replace(" ", "").Replace("-", "").Split(',')).ToArray();
+                
+                coords.Add(new Coordinate(Convert.ToInt32(tempCoords[0][0]), Convert.ToInt32(tempCoords[0][1])));
+                coords.Add(new Coordinate(Convert.ToInt32(tempCoords[1][0]), Convert.ToInt32(tempCoords[1][1])));
+            }
+                
+            var lineCoords = new List<Coordinate>();
+            
+            for (int i = 0; i < coords.Count; i+=2)
+            {
+                var coord1 = coords[i];
+                var coord2 = coords[i+1];
+                lineCoords.AddRange(GetLineCoordinates(coord1, coord2));
+            }
+
+            var grid = new Grid(coords.Max(m => m.x), coords.Max(m => m.y));
+            
+            foreach(var coord in lineCoords)
+            {
+                grid.grid[coord.x, coord.y] += 1;
+            }
+            
+            Console.WriteLine(grid.GetOverlaps());
+        }
+
+        static Coordinate[] GetLineCoordinates(Coordinate coord1,Coordinate coord2)
+        {
+            var coords = new List<Coordinate>();
+            if (coord1.x == coord2.x)
+            {
+                if (coord2.y > coord1.y)
+                {
+                    for (int i = coord1.y; i <= coord2.y; i++)
+                    {
+                        coords.Add(new Coordinate(coord1.x, i));
+                    }
+                }
+                else
+                {
+                    for (int i = coord2.y; i <= coord1.y; i++)
+                    {
+                        coords.Add(new Coordinate(coord1.x, i));
+                    }
+                }
+            } else if (coord1.y == coord2.y)
+            {
+                if (coord2.x > coord1.x)
+                {
+                    for (int i = coord1.x; i <= coord2.x; i++)
+                    {
+                        coords.Add(new Coordinate(i, coord1.y));
+                    }
+                }
+                else
+                {
+                    for (int i = coord2.x; i <= coord1.x; i++)
+                    {
+                        coords.Add(new Coordinate(i, coord1.y));
+                    }
+                }
+            }
+            else
+            {
+                var xDiff = coord2.x - coord1.x;
+                var yDiff = coord2.y - coord1.y;
+                var xInc = xDiff / Math.Abs(xDiff);
+                var yInc = yDiff / Math.Abs(yDiff);
+
+                for (int i = 0; i < Math.Abs(coord1.x-coord2.x)+1; i++)
+                {
+                    coords.Add(new Coordinate(coord1.x+xInc*i, coord1.y+yInc*i));
+                }
+
+
+            }
+            return coords.ToArray();
+        }
+
+        class Coordinate
+        {
+            public int x;
+            public int y;
+            
+            public Coordinate(int x, int y)
+            {
+                this.x = x;
+                this.y = y;
+            }
+        }
+
+        class Grid
+        {
+            public int[,] grid;
+            
+            public Grid(int width, int height)
+            {
+                grid = new int[width+1,height+1];
+                for (int i = 0; i < width+1; i++)
+                {
+                    for (int j = 0; j < height+1; j++)
+                    {
+                        grid[i,j] = 0;
+                    }
+                }
+            }
+            
+            public int GetOverlaps()
+            {
+                var overlaps = 0;
+                for (int i = 0; i < grid.GetLength(0); i++)
+                {
+                    for (int j = 0; j < grid.GetLength(1); j++)
+                    {
+                        if (grid[i,j] > 1)
+                        {
+                            overlaps++;
+                        }
+                    }
+                }
+                return overlaps;
+            }
+
+        }
+
+        #endregion
+        
     }
 }
