@@ -9,7 +9,7 @@ namespace AdventOfCode2021
     {
         public static void Main(string[] args)
         {
-            Day6P1();
+            Day8P2();
         }
 
         #region Day1
@@ -586,7 +586,7 @@ namespace AdventOfCode2021
 
         #endregion
         
-        #region Day 6
+        #region Day6
         
         static void Day6P1()
         {
@@ -624,18 +624,139 @@ namespace AdventOfCode2021
 
         }
 
-        class lanterntFish
+        #endregion
+        
+        #region Day7
+
+        private static void Day7P1()
         {
-            public int interval;
+            var input = File.ReadAllLines("../../inputDay7.txt");
+            var crabs = new List<int>();
             
-            public lanterntFish(int interval)
+            foreach (var line in input)
             {
-                this.interval = interval;
+                crabs.AddRange(line.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries).Select(int.Parse));
             }
             
+            var min = crabs.Min();
+            var max = crabs.Max();
+
+            var fuelUsed = new int[max-min];
+            for (int i = min; i < max; i++)
+            {
+                foreach (var crab in crabs)
+                {
+                    fuelUsed[i]+= Math.Abs(crab - i);
+                }
+            }
+
+            Console.WriteLine(Array.IndexOf(fuelUsed, fuelUsed.Min()) + min);
+            Console.WriteLine(fuelUsed.Min());
+        }
+        
+        private static void Day7P2()
+        {
+            var input = File.ReadAllLines("../../inputDay7.txt");
+            var crabs = new List<int>();
+            
+            foreach (var line in input)
+            {
+                crabs.AddRange(line.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries).Select(int.Parse));
+            }
+            
+            var min = crabs.Min();
+            var max = crabs.Max();
+
+            var fuelUsed = new int[max-min];
+            for (int i = min; i < max; i++)
+            {
+                foreach (var crab in crabs)
+                {
+                    var fuel = 0;
+                    for (int j = 0; j < Math.Abs(crab - i)+1; j++)
+                    {
+                        fuel += j;
+                    }
+
+                    fuelUsed[i] += fuel;
+                }
+            }
+
+            Console.WriteLine(Array.IndexOf(fuelUsed, fuelUsed.Min()) + min);
+            Console.WriteLine(fuelUsed.Min());
         }
         
         #endregion
+        
+        #region Day8
+
+        private static void Day8P1()
+        {
+            var input = File.ReadAllLines("../../inputDay8.txt");
+            var amount = 0;
+            foreach (var line in input)
+            {
+                var secondParts = line.Split('|')[1].Split(new []{' '}, StringSplitOptions.RemoveEmptyEntries);
+                
+                foreach(var part in secondParts)
+                {
+                    if (new int[] { 2, 3, 4, 7 }.Any(n => part.Length == n))
+                    {
+                        amount++;
+                    }
+                    
+                }
+            }
+        }
+        
+        private static void Day8P2()
+        {
+            var input = File.ReadAllLines("../../inputDay8.txt");
+            var amount = 0;
+            foreach (var line in input)
+            {
+                var secondParts = line.Split('|')[1].Split(new []{' '}, StringSplitOptions.RemoveEmptyEntries);
+                var number = "";
+                foreach(var part in secondParts)
+                {
+                    if (part == "ab")
+                    {
+                        number += "1";
+                    } else if (part == "gcdfa")
+                    {
+                        number += "2";
+                    } else if (part == "fbcad")
+                    {
+                        number += "3";
+                    } else if (part == "eafb")
+                    {
+                        number += "4";
+                    } else if (part == "cdfbe")
+                    {
+                        number += "5";
+                    } else if (part == "cdfgeb")
+                    {
+                        number += "6";
+                    } else if (part == "dab")
+                    {
+                        number += "7";
+                    } else if (part == "acedgfb")
+                    {
+                        number += "8";
+                    } else if (part == "cefabd")
+                    {
+                        number += "9";
+                    }
+
+                }
+
+                amount += int.Parse(number);
+            }
+            Console.WriteLine(amount);
+        }
+        
+        #endregion
+        
         
     }
 }
