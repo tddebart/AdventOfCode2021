@@ -9,7 +9,7 @@ namespace AdventOfCode2021
     {
         public static void Main(string[] args)
         {
-            Day5P2();
+            Day6P1();
         }
 
         #region Day1
@@ -584,6 +584,57 @@ namespace AdventOfCode2021
 
         }
 
+        #endregion
+        
+        #region Day 6
+        
+        static void Day6P1()
+        {
+            var input = File.ReadAllLines("../../inputDay6.txt");
+            var fishes = new List<long>();
+            foreach (var line in input)
+            {
+                var split = line.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var fLine in split)
+                {
+                    fishes.Add(long.Parse(fLine));
+                }
+            }
+
+            for (int i = 0; i < 80; i++)
+            {
+                var newFishes = new List<long>();
+                for (var j = 0; j < fishes.Count; j++)
+                {
+                    if (fishes[j] == 0)
+                    {
+                        fishes[j] = 6;
+                        newFishes.Add(8);
+                    }
+                    else
+                    {
+                        fishes[j]--;
+                    }
+                }
+
+                fishes.AddRange(newFishes);
+            }
+
+            Console.WriteLine(fishes.Count);
+
+        }
+
+        class lanterntFish
+        {
+            public int interval;
+            
+            public lanterntFish(int interval)
+            {
+                this.interval = interval;
+            }
+            
+        }
+        
         #endregion
         
     }
