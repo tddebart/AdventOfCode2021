@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+// ReSharper disable UnusedMember.Local
 
 namespace AdventOfCode2021
 {
@@ -9,7 +10,7 @@ namespace AdventOfCode2021
     {
         public static void Main(string[] args)
         {
-            Day8P2();
+            Day9P2();
         }
 
         #region Day1
@@ -707,6 +708,7 @@ namespace AdventOfCode2021
                     
                 }
             }
+            Console.WriteLine(amount);
         }
         
         private static void Day8P2()
@@ -755,6 +757,153 @@ namespace AdventOfCode2021
             Console.WriteLine(amount);
         }
         
+        #endregion
+
+        #region Day9
+
+        private static void Day9P1()
+        {
+            var input = File.ReadAllLines("../../inputDay9.txt");
+            int[,] numbers = { };
+            var lowPoints = new List<int>();
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                var line = input[i];
+                for (int l = 0; l < line.Length; l++)
+                {
+                    if (numbers.GetLength(0) == 0)
+                    {
+                        numbers = new int[input.Length,line.Length];
+                    }
+                    var number = int.Parse(line[l].ToString());
+                    
+                    numbers[i,l] = number;
+                }
+            }
+
+            for (int i = 0; i < numbers.GetLength(0); i++)
+            {
+                for (int l = 0; l < numbers.GetLength(1); l++)
+                {
+                    bool isLow = (!checkIfInRange(i, l + 1) || numbers[i, l + 1] > numbers[i, l]) &&
+                                 (!checkIfInRange(i + 1, l) || numbers[i + 1, l] > numbers[i, l]) &&
+                                 (!checkIfInRange(i, l - 1) || numbers[i, l - 1] > numbers[i, l]) &&
+                                 (!checkIfInRange(i - 1, l) || numbers[i - 1, l] > numbers[i, l]);
+                    if (isLow)
+                    {
+                        lowPoints.Add(numbers[i, l]);
+                    }
+                }
+            }
+            
+            Console.WriteLine(lowPoints.Select(n => n + 1).Sum());
+
+            bool checkIfInRange(int i , int l)
+            {
+                return i >= 0 && i < numbers.GetLength(0) && l >= 0 && l < numbers.GetLength(1);
+            }
+        }
+        
+        private static void Day9P2()
+        {
+            var input = File.ReadAllLines("../../inputDay9.txt");
+            int[,] numbers = { };
+            var lowPoints = new List<lowPointObj>();
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                var line = input[i];
+                for (int l = 0; l < line.Length; l++)
+                {
+                    if (numbers.GetLength(0) == 0)
+                    {
+                        numbers = new int[input.Length,line.Length];
+                    }
+                    var number = int.Parse(line[l].ToString());
+                    
+                    numbers[i,l] = number;
+                }
+            }
+
+            for (int i = 0; i < numbers.GetLength(0); i++)
+            {
+                for (int l = 0; l < numbers.GetLength(1); l++)
+                {
+                    bool isLow = (!checkIfInRange(i, l + 1) || numbers[i, l + 1] > numbers[i, l]) &&
+                                 (!checkIfInRange(i + 1, l) || numbers[i + 1, l] > numbers[i, l]) &&
+                                 (!checkIfInRange(i, l - 1) || numbers[i, l - 1] > numbers[i, l]) &&
+                                 (!checkIfInRange(i - 1, l) || numbers[i - 1, l] > numbers[i, l]);
+                    if (isLow)
+                    {
+                        lowPoints.Add(new lowPointObj(numbers[i, l], i,l));
+                    }
+                }
+            }
+
+            var basins = new List<int>();
+            
+            // Calculate basins
+            foreach (var lowPoint in lowPoints)
+            {
+                var i = lowPoint.x;
+                var l = lowPoint.y;
+
+                var amount = 0;
+
+                var neighs = checkIfNeighsHigher(i, l);
+                foreach (var neigh in neighs)
+                {
+                    Console.WriteLine(neigh.x + " " + neigh.y);
+                }
+                while (neighs.Count != 0)
+                {
+                }
+            }
+
+            List<Coordinate> checkIfNeighsHigher(int i, int l)
+            {
+                var neighs = new List<Coordinate>();
+                if (checkIfInRange(i, l + 1) && numbers[i, l + 1] > numbers[i, l])
+                {
+                    neighs.Add( new Coordinate(i,l));
+                }
+                else if (checkIfInRange(i + 1, l) && numbers[i + 1, l] > numbers[i, l])
+                {
+                    neighs.Add( new Coordinate(i,l));
+                }
+                else if (checkIfInRange(i, l - 1) && numbers[i, l - 1] > numbers[i, l])
+                {
+                    neighs.Add( new Coordinate(i,l));
+                }
+                else if (checkIfInRange(i - 1, l) && numbers[i - 1, l] > numbers[i, l])
+                {
+                    neighs.Add( new Coordinate(i,l));
+                }
+
+                return neighs;
+            }
+
+            bool checkIfInRange(int i , int l)
+            {
+                return i >= 0 && i < numbers.GetLength(0) && l >= 0 && l < numbers.GetLength(1);
+            }
+        }
+        
+        class lowPointObj
+        {
+            public int number;
+            public int x;
+            public int y;
+            
+            public lowPointObj(int number, int x, int y)
+            {
+                this.number = number;
+                this.x = x;
+                this.y = y;
+            }
+        }
+
         #endregion
         
         
